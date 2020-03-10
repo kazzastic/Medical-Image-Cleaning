@@ -1,6 +1,5 @@
-patches
-mass_case_description_test_set.csv
-new.png
-4_mask.jpeg
-CBIS-DDSM
 calc_case_description_train_set.csv
+final_test_data
+calc_training_full_mammogram_images
+calc_training_full_roi_images
+data 
