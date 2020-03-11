@@ -220,9 +220,11 @@ def get_patches(im, step_size=20, dimensions=[256, 256], is_memogram=False):
     '''
     arr_shape = np.array(im.shape)
     h,w = arr_shape[0], arr_shape[1]
-    temp = im
     if(h<256 or w<256):
-        im = cv2.resize(temp, (256, 256), cv2.INTER_NEAREST)
+        #print("Before",im)
+        im = np.array(im, dtype='float32')
+        #print("After", im)
+        im = cv2.resize(im, (256, 256))
     #if is_memogram:
     #    dimensions = [2750, 1500]
     patches = view_as_windows(im, dimensions, step=step_size)
@@ -245,10 +247,13 @@ def get_zipped_patches(mammogram, roi, step_size, quartile_cutoff=10, filter_roi
         # On images with more than one ROI, don't repeatedly save the same regions OUTSIDE that ROI.
         print('Filtering with ROI: ', roi)
         patch_means = np.mean(roi, axis=(1, 2))
+        print("This is patch mean",patch_means)
         mask = np.where(patch_means > 0)
+        
 
         # filter
         mammogram = mammogram[mask[0], :, :]
+        print("IF ROI shape: ", roi.shape)
         roi = roi[mask[0], :, :]
 
         print('Mammogram/ ROI shape after filtering: ', mammogram.shape)
@@ -259,6 +264,7 @@ def get_zipped_patches(mammogram, roi, step_size, quartile_cutoff=10, filter_roi
         # NEW OPTIMIZATION CODE ATTEMPT
         # Eliminate the bottom quartile_cutoff percent of the image (presumably all black and some of the breast)
         patch_means = np.mean(mammogram, axis=(1, 2))
+        print("This is patch mean",patch_means)
         percentile_cutoff = np.percentile(patch_means, q=quartile_cutoff)
 
         # Note mask is GREATER THAN cutoff
@@ -267,7 +273,8 @@ def get_zipped_patches(mammogram, roi, step_size, quartile_cutoff=10, filter_roi
         print('roi:', roi)
         # Apply mask
         mammogram = mammogram[mask[0], :, :]
-        # roi = roi[mask[0], :, :]
+        print("ELSE ROI shape:", roi.shape)
+        roi = roi[mask[0], :, :]
 
     print('Patches array shape after optimization: ', mammogram.shape)
 
