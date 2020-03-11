@@ -263,12 +263,14 @@ def get_zipped_patches(mammogram, roi, step_size, quartile_cutoff=10, filter_roi
 
         # NEW OPTIMIZATION CODE ATTEMPT
         # Eliminate the bottom quartile_cutoff percent of the image (presumably all black and some of the breast)
-        patch_means = np.mean(mammogram, axis=(1, 2))
+        #patch_means = np.mean(mammogram, axis=(1, 2))
+        patch_means = np.mean(roi, axis=(1, 2))
         print("This is patch mean",patch_means)
         percentile_cutoff = np.percentile(patch_means, q=quartile_cutoff)
 
         # Note mask is GREATER THAN cutoff
         mask = np.where(patch_means > percentile_cutoff)
+        #mask = np.where(patch_means > 0)
         print(mask)
         print('roi:', roi)
         # Apply mask
