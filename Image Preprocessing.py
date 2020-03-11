@@ -208,7 +208,7 @@ def normalize(im):
 ###################################################################
 
 
-def get_patches(im, step_size=20, dimensions=[160, 160], is_memogram=False):
+def get_patches(im, step_size=20, dimensions=[256, 256], is_memogram=False):
     '''
     Return sliding windows along the breast, moving STEP_SIZE pixels at a time.
 
@@ -218,8 +218,13 @@ def get_patches(im, step_size=20, dimensions=[160, 160], is_memogram=False):
         step_size: the stride by which the window jumps
         dimemsions: the dimensions of the patch
     '''
-    if is_memogram:
-        dimensions = [2750, 1500]
+    arr_shape = np.array(im.shape)
+    h,w = arr_shape[0], arr_shape[1]
+    temp = im
+    if(h<256 or w<256):
+        im = cv2.resize(temp, (256, 256), cv2.INTER_NEAREST)
+    #if is_memogram:
+    #    dimensions = [2750, 1500]
     patches = view_as_windows(im, dimensions, step=step_size)
     patches = patches.reshape([-1, dimensions[0], dimensions[1]])
 
